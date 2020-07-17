@@ -19,7 +19,7 @@ def load_player():
         g.player = get_db().execute(
             'SELECT * FROM player WHERE id = ?', (player_id,)
         ).fetchone()
-    
+
         # Clear invalid session.
         if g.player is None:
             session.clear()
@@ -42,7 +42,7 @@ def lobby():
         return redirect(url_for('auth.room'))
 
     db = get_db()
-    
+
     if request.method == 'POST':
         username = request.form['username']
         error = None
@@ -67,7 +67,7 @@ def lobby():
         flash(error)
 
     players = db.execute(
-        'SELECT COUNT(id) FROM player'
+        'SELECT COUNT(id) FROM player WHERE active = 1'
     ).fetchone()[0]
 
     return render_template('game/lobby.html', players=players)
@@ -88,8 +88,24 @@ def leave():
 
     print(f"Player '{g.player['username']}' left the game.")
 
-    # if last player to leave or only inactive players remaining:
-        # set ended field in game
-        # clear player table
+    check_players_left()
 
     return redirect(url_for('auth.lobby'))
+
+
+def check_players_left():
+    db = get_db()
+    
+    active_players = db.execute(
+        'SELECT COUNT(id) FROM player WHERE active = 1'
+    ).fetchone()[0]
+    
+    if active_players == 0:
+        game_id = session.get('game_id')
+        if game_id is not None:
+            db.execute(
+                'UPDATE game SET ended = CURRENT_TIMESTAMP'
+                ' WHERE id = ?;', (game_id,)
+            )
+        db.execute('DELETE FROM player')
+        db.commit()
