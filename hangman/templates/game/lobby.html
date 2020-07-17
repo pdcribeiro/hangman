@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Lobby{% endblock %}
+
+{% block content %}
+<div class="lobby">
+  <h1 class="heading">Welcome to my hangman game</h1>
+
+  {% if players == 1 %}
+  <span>There is 1 player waiting for you!</span>
+  {% elif players > 1 %}
+  <span>There are {{ players }} players waiting for you!</span>
+  {% endif %}
+
+  {% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+  {% endfor %}
+
+  <form method="post">
+    <input name="username" id="username" placeholder="username" required>
+    <input type="submit" value="Join">
+  </form>
+</div>
+{% endblock %}
