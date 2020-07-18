@@ -145,7 +145,7 @@ function Word({ gameState: { word, letters } }) {
 function Letter({ letter, wrong }) {
   const styleWrong = {
     textDecoration: 'line-through',
-    color: 'red',
+    color: '#940000',
   };
 
   return (

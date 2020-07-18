@@ -27,6 +27,10 @@ body {
   font-weight: 500;
 }
 
+.bloody {
+  color: #940000;
+}
+
 .lobby span {
   margin-bottom: 20px;
 }
@@ -37,7 +41,7 @@ body {
 
 .lobby .flash {
   margin-top: 10px;
-  color: red;
+  color: #940000;
 }
 
 
