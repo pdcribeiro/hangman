@@ -12,13 +12,13 @@
   <span>There are {{ players }} players waiting for you!</span>
   {% endif %}
 
+  <form method="post">
+    <input name="username" id="username" placeholder="username" required autofocus>
+    <input type="submit" value="Join">
+  </form>
+
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
-
-  <form method="post">
-    <input name="username" id="username" placeholder="username" required>
-    <input type="submit" value="Join">
-  </form>
 </div>
 {% endblock %}

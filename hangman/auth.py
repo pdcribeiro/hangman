@@ -52,7 +52,7 @@ def lobby():
         elif db.execute(
             'SELECT id FROM player WHERE username = ?', (username,)
         ).fetchone() is not None:
-            error = f"Username '{username}' is already taken."
+            error = f"'{username}' is already taken."
 
         if error is None:
             cursor = db.execute(
@@ -88,24 +88,32 @@ def leave():
 
     print(f"Player '{g.player['username']}' left the game.")
 
-    check_players_left()
+    check_end_game()
 
     return redirect(url_for('auth.lobby'))
 
 
-def check_players_left():
+def check_end_game():
     db = get_db()
+
+    # Clear inactive players
+    db.execute(
+        "DELETE FROM player"
+        " WHERE active = 0"
+        " AND joined < DATETIME('now', '-1 day')"
+    )
     
-    active_players = db.execute(
-        'SELECT COUNT(id) FROM player WHERE active = 1'
+    # Count remaining players
+    players = db.execute(
+        'SELECT COUNT(id) FROM player'
     ).fetchone()[0]
-    
-    if active_players == 0:
-        game_id = session.get('game_id')
-        if game_id is not None:
-            db.execute(
-                'UPDATE game SET ended = CURRENT_TIMESTAMP'
-                ' WHERE id = ?;', (game_id,)
-            )
-        db.execute('DELETE FROM player')
-        db.commit()
+
+    # Set game end timestamp
+    game_id = session.get('game_id')
+    if players == 1 and game_id is not None:
+        db.execute(
+            'UPDATE game SET ended = CURRENT_TIMESTAMP'
+            ' WHERE id = ?;', (game_id,)
+        )
+
+    db.commit()
