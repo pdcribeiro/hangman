@@ -31,9 +31,100 @@ function Game() {
 }
 
 function Drawing({ chancesLeft }) {
+  const [WIDTH, HEIGHT, THICK] = [400, 300, 6];
+  const canvasRef = React.useRef();
+  const [context, setContext] = React.useState();
+
+  React.useEffect(() => {
+    const ctx = canvasRef.current.getContext('2d');
+    setContext(ctx);
+    drawGallows(ctx);
+  }, []);
+
+  function drawGallows(ctx) {
+    ctx.lineWidth = THICK;
+
+    ctx.moveTo(WIDTH, HEIGHT - THICK / 2);
+    ctx.lineTo(0.66 * WIDTH, HEIGHT - THICK / 2);
+    ctx.stroke();
+
+    ctx.moveTo(0.83 * WIDTH, HEIGHT - THICK / 2);
+    ctx.lineTo(0.83 * WIDTH, 0.2 * HEIGHT - THICK / 2);
+    ctx.stroke();
+
+    ctx.moveTo(0.83 * WIDTH, HEIGHT - THICK / 2);
+    ctx.lineTo(0.83 * WIDTH, 0.2 * HEIGHT);
+    ctx.stroke();
+
+    ctx.lineTo(0.5 * WIDTH + THICK / 4, 0.2 * HEIGHT);
+    ctx.stroke();
+
+    ctx.lineWidth = THICK / 2;
+    ctx.moveTo(0.5 * WIDTH + THICK / 2, 0.2 * HEIGHT);
+    ctx.lineTo(0.5 * WIDTH + THICK / 2, 0.4 * HEIGHT);
+    ctx.stroke();
+  }
+
+  React.useEffect(() => {
+    drawFunctionMap[chancesLeft]();
+  }, [chancesLeft]);
+
+  const drawFunctionMap = {
+    6: reset,
+    5: drawHead,
+    4: drawTorso,
+    3: () => drawLimb('left', false),
+    2: () => drawLimb('right', false),
+    1: () => drawLimb('left', true),
+    0: () => drawLimb('right', true),
+  };
+
+  function reset() {
+    if (context) {
+      context.clearRect(0, 0, WIDTH, HEIGHT);
+      context.beginPath();
+      drawGallows(context);
+    }
+  }
+
+  function drawHead() {
+    context.beginPath();
+    context.arc(
+      0.5 * WIDTH + THICK / 2,
+      0.45 * HEIGHT,
+      0.05 * HEIGHT,
+      0,
+      2 * Math.PI
+    );
+    context.stroke();
+  }
+
+  function drawTorso() {
+    context.moveTo(0.5 * WIDTH + THICK / 2, 0.5 * HEIGHT);
+    context.lineTo(0.5 * WIDTH + THICK / 2, 0.7 * HEIGHT);
+    context.stroke();
+  }
+
+  function drawLimb(side, leg) {
+    context.moveTo(
+      0.5 * WIDTH + THICK / 2,
+      0.5 * HEIGHT + (leg ? 0.2 * HEIGHT : 0)
+    );
+    context.lineTo(
+      0.5 * WIDTH + THICK / 2 + (side === 'left' ? -1 : 1) * 20,
+      0.7 * HEIGHT + (leg ? 0.2 * HEIGHT : 0)
+    );
+    context.stroke();
+  }
+
   return (
     <div className="drawing">
-      <h1 className="heading">{chancesLeft}</h1>
+      <canvas
+        id="canvas"
+        width={WIDTH}
+        height={HEIGHT}
+        ref={canvasRef}
+      ></canvas>
     </div>
   );
 }

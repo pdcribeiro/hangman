@@ -64,9 +64,8 @@ body {
   font-size: 8vmin;
 }
 
-#game .heading {
-  font-weight: 400;
-  text-align: center;
+#game canvas {
+  border: 1px solid black;
 }
 
 #game .letter {
