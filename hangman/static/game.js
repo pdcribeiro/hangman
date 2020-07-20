@@ -33,37 +33,14 @@ function Game() {
 function Drawing({ chancesLeft }) {
   const [WIDTH, HEIGHT, THICK] = [400, 300, 6];
   const canvasRef = React.useRef();
-  const [context, setContext] = React.useState();
+  let context = canvasRef.current && canvasRef.current.getContext('2d');
 
   React.useEffect(() => {
-    const ctx = canvasRef.current.getContext('2d');
-    setContext(ctx);
-    drawGallows(ctx);
+    context = canvasRef.current.getContext('2d');
+    for (let i = 6; i > chancesLeft; i--) {
+      drawFunctionMap[i]();
+    }
   }, []);
-
-  function drawGallows(ctx) {
-    ctx.lineWidth = THICK;
-
-    ctx.moveTo(WIDTH, HEIGHT - THICK / 2);
-    ctx.lineTo(0.66 * WIDTH, HEIGHT - THICK / 2);
-    ctx.stroke();
-
-    ctx.moveTo(0.83 * WIDTH, HEIGHT - THICK / 2);
-    ctx.lineTo(0.83 * WIDTH, 0.2 * HEIGHT - THICK / 2);
-    ctx.stroke();
-
-    ctx.moveTo(0.83 * WIDTH, HEIGHT - THICK / 2);
-    ctx.lineTo(0.83 * WIDTH, 0.2 * HEIGHT);
-    ctx.stroke();
-
-    ctx.lineTo(0.5 * WIDTH + THICK / 4, 0.2 * HEIGHT);
-    ctx.stroke();
-
-    ctx.lineWidth = THICK / 2;
-    ctx.moveTo(0.5 * WIDTH + THICK / 2, 0.2 * HEIGHT);
-    ctx.lineTo(0.5 * WIDTH + THICK / 2, 0.4 * HEIGHT);
-    ctx.stroke();
-  }
 
   React.useEffect(() => {
     drawFunctionMap[chancesLeft]();
@@ -80,11 +57,33 @@ function Drawing({ chancesLeft }) {
   };
 
   function reset() {
-    if (context) {
-      context.clearRect(0, 0, WIDTH, HEIGHT);
-      context.beginPath();
-      drawGallows(context);
-    }
+    context.clearRect(0, 0, WIDTH, HEIGHT);
+    context.beginPath();
+    drawGallows();
+  }
+
+  function drawGallows() {
+    context.lineWidth = THICK;
+
+    context.moveTo(WIDTH, HEIGHT - THICK / 2);
+    context.lineTo(0.66 * WIDTH, HEIGHT - THICK / 2);
+    context.stroke();
+
+    context.moveTo(0.83 * WIDTH, HEIGHT - THICK / 2);
+    context.lineTo(0.83 * WIDTH, 0.2 * HEIGHT - THICK / 2);
+    context.stroke();
+
+    context.moveTo(0.83 * WIDTH, HEIGHT - THICK / 2);
+    context.lineTo(0.83 * WIDTH, 0.2 * HEIGHT);
+    context.stroke();
+
+    context.lineTo(0.5 * WIDTH + THICK / 4, 0.2 * HEIGHT);
+    context.stroke();
+
+    context.lineWidth = THICK / 2;
+    context.moveTo(0.5 * WIDTH + THICK / 2, 0.2 * HEIGHT);
+    context.lineTo(0.5 * WIDTH + THICK / 2, 0.4 * HEIGHT);
+    context.stroke();
   }
 
   function drawHead() {
